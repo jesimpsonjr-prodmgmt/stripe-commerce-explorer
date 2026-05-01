@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stripe Commerce Explorer | John Simpson</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2235;
+  --bg-card-hover: #1f2a40;
+  --bg-input: #0d1220;
+  --border-subtle: #1e2d45;
+  --border-active: #635bff;
+  --text-primary: #f0f2f5;
+  --text-secondary: #8b95a8;
+  --text-muted: #5a6478;
+  --stripe-purple: #635bff;
+  --stripe-purple-light: #7a73ff;
+  --stripe-purple-glow: rgba(99, 91, 255, 0.15);
+  --stripe-green: #30d158;
+  --stripe-green-glow: rgba(48, 209, 88, 0.12);
+  --stripe-red: #ff453a;
+  --stripe-red-glow: rgba(255, 69, 58, 0.12);
+  --stripe-yellow: #ffd60a;
+  --stripe-yellow-glow: rgba(255, 214, 10, 0.12);
+  --stripe-blue: #0a84ff;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: 0.2s ease;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--stripe-purple), var(--stripe-purple-light));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+  letter-spacing: -1px;
+}
+
+.logo-text {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.logo-text span {
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.header-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.header-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+
+.header-links a:hover { color: var(--text-primary); }
+
+/* ===== HERO ===== */
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px 48px;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--stripe-purple-glow);
+  border: 1px solid rgba(99, 91, 255, 0.25);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--stripe-purple-light);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 24px;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--stripe-purple-light);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--stripe-purple-light), #a78bfa, var(--stripe-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ===== TAB NAV ===== */
+.tab-nav-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.tab-btn.active {
+  background: var(--stripe-purple);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.3);
+}
+
+.tab-icon {
+  font-size: 16px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.tab-panel.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SHARED CARD STYLES ===== */
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.demo-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: border-color var(--transition);
+}
+
+.demo-card:hover {
+  border-color: rgba(99, 91, 255, 0.3);
+}
+
+.demo-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.card-icon.purple { background: var(--stripe-purple-glow); }
+.card-icon.green { background: var(--stripe-green-glow); }
+.card-icon.red { background: var(--stripe-red-glow); }
+.card-icon.yellow { background: var(--stripe-yellow-glow); }
+.card-icon.blue { background: rgba(10, 132, 255, 0.12); }
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.section-intro {
+  margin-bottom: 32px;
+}
+
+.section-intro h2 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  margin-bottom: 10px;
+}
+
+.section-intro p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* ===== PM INSIGHT CALLOUT ===== */
+.pm-insight {
+  background: linear-gradient(135deg, rgba(99, 91, 255, 0.06), rgba(99, 91, 255, 0.02));
+  border: 1px solid rgba(99, 91, 255, 0.15);
+  border-left: 3px solid var(--stripe-purple);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 20px 24px;
+  margin-top: 24px;
+}
+
+.pm-insight-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--stripe-purple-light);
+  margin-bottom: 8px;
+}
+
+.pm-insight p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== TAB 1: PAYMENT ELEMENT ===== */
+.checkout-sim {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.checkout-sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.checkout-sim-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.checkout-sim-amount {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--stripe-purple-light);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  transition: border-color var(--transition);
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--stripe-purple);
+  box-shadow: 0 0 0 3px var(--stripe-purple-glow);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card-brands {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.card-brand {
+  padding: 4px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+
+.card-brand.detected {
+  border-color: var(--stripe-purple);
+  color: var(--stripe-purple-light);
+  background: var(--stripe-purple-glow);
+}
+
+.pay-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--stripe-purple);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pay-btn:hover {
+  background: var(--stripe-purple-light);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 91, 255, 0.35);
+}
+
+.pay-btn.processing {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.pay-btn.success {
+  background: var(--stripe-green);
+}
+
+.pay-btn.declined {
+  background: var(--stripe-red);
+}
+
+/* Payment method tabs */
+.pm-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 20px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  border: 1px solid var(--border-subtle);
+}
+
+.pm-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.pm-tab:hover { color: var(--text-secondary); }
+
+.pm-tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.pm-content { display: none; }
+.pm-content.active { display: block; }
+
+/* Wallet buttons */
+.wallet-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wallet-btn {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wallet-btn.apple-pay {
+  background: white;
+  color: #000;
+}
+
+.wallet-btn.google-pay {
+  background: #000;
+  color: white;
+  border-color: #333;
+}
+
+.wallet-btn.apple-pay:hover { background: #f5f5f5; }
+.wallet-btn.google-pay:hover { background: #1a1a1a; }
+
+/* BNPL */
+.bnpl-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.bnpl-option:hover {
+  border-color: var(--stripe-purple);
+  background: var(--bg-card);
+}
+
+.bnpl-option.selected {
+  border-color: var(--stripe-purple);
+  box-shadow: 0 0 0 3px var(--stripe-purple-glow);
+}
+
+.bnpl-logo {
+  font-weight: 700;
+  font-size: 14px;
+  min-width: 70px;
+}
+
+.bnpl-logo.klarna { color: #ffb3c7; }
+.bnpl-logo.afterpay { color: #b2fce4; }
+.bnpl-logo.affirm { color: #82b1ff; }
+
+.bnpl-details {
+  flex: 1;
+}
+
+.bnpl-details .schedule {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.bnpl-details .amount {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+/* Test cards reference */
+.test-cards {
+  margin-top: 20px;
+}
+
+.test-cards-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color var(--transition);
+}
+
+.test-cards-toggle:hover { color: var(--text-secondary); }
+
+.test-cards-list {
+  display: none;
+  margin-top: 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.test-cards-list.show { display: block; }
+
+.test-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.test-card-row:last-child { border-bottom: none; }
+.test-card-row:hover { background: var(--bg-card); }
+
+.test-card-row .number {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.test-card-row .result {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.test-card-row .result.success {
+  color: var(--stripe-green);
+  background: var(--stripe-green-glow);
+}
+
+.test-card-row .result.decline {
+  color: var(--stripe-red);
+  background: var(--stripe-red-glow);
+}
+
+/* Product info sidebar */
+.product-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.product-info-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.product-info-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--stripe-purple);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+.product-info-text {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.product-info-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Payment method count bar */
+.pm-count-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+}
+
+.pm-count-number {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--stripe-purple-light);
+  line-height: 1;
+}
+
+.pm-count-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ===== TAB 2: LINK ===== */
+.comparison-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.comparison-side {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.comparison-side.link-side {
+  border-color: rgba(99, 91, 255, 0.3);
+  background: linear-gradient(180deg, var(--bg-card), rgba(99, 91, 255, 0.04));
+}
+
+.comparison-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.vs-badge {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.comparison-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.comparison-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.comparison-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.checkout-field {
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  position: relative;
+}
+
+.checkout-field.filled {
+  color: var(--text-primary);
+  border-color: var(--stripe-green);
+  background: rgba(48, 209, 88, 0.04);
+}
+
+.checkout-field .field-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  margin-bottom: 2px;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.step-dot.active {
+  background: var(--stripe-purple);
+  border-color: var(--stripe-purple);
+  color: white;
+}
+
+.step-dot.complete {
+  background: var(--stripe-green);
+  border-color: var(--stripe-green);
+  color: white;
+}
+
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.step-line.complete { background: var(--stripe-green); }
+
+/* Conversion funnel */
+.funnel-container {
+  padding: 8px 0;
+}
+
+.funnel-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.funnel-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  width: 120px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.funnel-bar-track {
+  flex: 1;
+  height: 28px;
+  background: var(--bg-input);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.funnel-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.funnel-bar.traditional {
+  background: linear-gradient(90deg, rgba(139, 149, 168, 0.3), rgba(139, 149, 168, 0.15));
+}
+
+.funnel-bar.link-bar {
+  background: linear-gradient(90deg, rgba(99, 91, 255, 0.4), rgba(99, 91, 255, 0.2));
+}
+
+.funnel-pct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.funnel-legend {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.funnel-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.funnel-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.funnel-legend-dot.trad { background: rgba(139, 149, 168, 0.4); }
+.funnel-legend-dot.link-dot { background: rgba(99, 91, 255, 0.5); }
+
+/* ===== TAB 3: RADAR ===== */
+.risk-score-display {
+  text-align: center;
+  padding: 24px;
+}
+
+.risk-gauge {
+  position: relative;
+  width: 180px;
+  height: 100px;
+  margin: 0 auto 16px;
+}
+
+.risk-gauge svg {
+  width: 100%;
+  height: 100%;
+}
+
+.risk-score-value {
+  font-family: var(--font-mono);
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.risk-score-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.risk-low { color: var(--stripe-green); }
+.risk-medium { color: var(--stripe-yellow); }
+.risk-high { color: var(--stripe-red); }
+
+/* Signal breakdown */
+.signal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signal-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signal-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.signal-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.signal-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.signal-bar-fill.low { background: var(--stripe-green); }
+.signal-bar-fill.med { background: var(--stripe-yellow); }
+.signal-bar-fill.high { background: var(--stripe-red); }
+
+.signal-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  width: 32px;
+  text-align: right;
+}
+
+/* Scenario selector */
+.scenario-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.scenario-btn {
+  padding: 8px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.scenario-btn:hover {
+  border-color: var(--stripe-purple);
+  color: var(--text-primary);
+}
+
+.scenario-btn.active {
+  background: var(--stripe-purple-glow);
+  border-color: var(--stripe-purple);
+  color: var(--stripe-purple-light);
+}
+
+/* Radar rules */
+.rule-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rule-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.rule-condition {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--stripe-purple-light);
+  flex: 1;
+}
+
+.rule-action {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rule-action.block {
+  color: var(--stripe-red);
+  background: var(--stripe-red-glow);
+}
+
+.rule-action.review {
+  color: var(--stripe-yellow);
+  background: var(--stripe-yellow-glow);
+}
+
+.rule-action.allow {
+  color: var(--stripe-green);
+  background: var(--stripe-green-glow);
+}
+
+.rule-toggle {
+  width: 36px;
+  height: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--transition);
+}
+
+.rule-toggle::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: all var(--transition);
+}
+
+.rule-toggle.on {
+  background: rgba(99, 91, 255, 0.2);
+  border-color: var(--stripe-purple);
+}
+
+.rule-toggle.on::after {
+  left: 18px;
+  background: var(--stripe-purple-light);
+}
+
+/* Transaction log */
+.tx-log {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.tx-log-header {
+  display: grid;
+  grid-template-columns: 90px 1fr 70px 70px 80px;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tx-log-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 70px 70px 80px;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  align-items: center;
+  transition: background var(--transition);
+}
+
+.tx-log-row:hover { background: var(--bg-input); }
+
+.tx-status {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+  text-align: center;
+}
+
+.tx-status.approved {
+  color: var(--stripe-green);
+  background: var(--stripe-green-glow);
+}
+
+.tx-status.blocked {
+  color: var(--stripe-red);
+  background: var(--stripe-red-glow);
+}
+
+.tx-status.review {
+  color: var(--stripe-yellow);
+  background: var(--stripe-yellow-glow);
+}
+
+/* ===== FOOTER ===== */
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-inner p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.footer-inner a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.footer-inner a:hover { color: var(--stripe-purple-light); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .demo-grid { grid-template-columns: 1fr; }
+  .comparison-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .comparison-divider {
+    padding: 8px 0;
+  }
+  .tab-btn { font-size: 12px; padding: 10px 12px; }
+  .tx-log-header, .tx-log-row {
+    grid-template-columns: 70px 1fr 60px 60px;
+  }
+  .tx-log-header > :nth-child(5),
+  .tx-log-row > :nth-child(5) {
+    display: none;
+  }
+  .header-links { display: none; }
+  .hero h1 { font-size: 28px; }
+  .funnel-label { width: 80px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <div class="logo-icon">S</div>
+      <div class="logo-text">Stripe Commerce Explorer <span>by John Simpson</span></div>
+    </div>
+    <div class="header-links">
+      <a href="https://johnsimpson.io" target="_blank">Portfolio</a>
+      <a href="https://linkedin.com/in/johnsjr" target="_blank">LinkedIn</a>
+      <a href="https://github.com/jesimpsonjr-prodmgmt/stripe-commerce-explorer" target="_blank">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Interactive Demo</div>
+  <h1>Explore Stripe's <span class="gradient-text">Payment Infrastructure</span></h1>
+  <p>Three interactive simulations showcasing how Stripe's checkout, identity, and fraud products work together to power modern commerce.</p>
+</section>
+
+<!-- TAB NAV -->
+<div class="tab-nav-wrapper">
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="payment-element">
+      <span class="tab-icon">&#9634;</span> Payment Element
+    </button>
+    <button class="tab-btn" data-tab="link">
+      <span class="tab-icon">&#9889;</span> Link
+    </button>
+    <button class="tab-btn" data-tab="radar">
+      <span class="tab-icon">&#9737;</span> Radar
+    </button>
+  </nav>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+  <!-- ==================== TAB 1: PAYMENT ELEMENT ==================== -->
+  <div class="tab-panel active" id="panel-payment-element">
+    <div class="section-intro">
+      <h2>Payment Element</h2>
+      <p>A single embeddable component that handles cards, digital wallets, buy-now-pay-later, and bank debits. One integration covers 125+ payment methods with automatic localization.</p>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Checkout Simulation -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon purple">&#9634;</div>
+          <div>
+            <div class="card-title">Checkout Simulation</div>
+            <div class="card-subtitle">Stripe.js sandbox mode</div>
+          </div>
+        </div>
+
+        <div class="checkout-sim">
+          <div class="checkout-sim-header">
+            <div class="checkout-sim-title">Complete your order</div>
+            <div class="checkout-sim-amount">$149.00</div>
+          </div>
+
+          <!-- Payment method sub-tabs -->
+          <div class="pm-tabs">
+            <button class="pm-tab active" data-pm="card">Card</button>
+            <button class="pm-tab" data-pm="wallet">Wallets</button>
+            <button class="pm-tab" data-pm="bnpl">BNPL</button>
+          </div>
+
+          <!-- Card form -->
+          <div class="pm-content active" id="pm-card">
+            <div class="form-group">
+              <label class="form-label">Card Number</label>
+              <input type="text" class="form-input" id="card-number" placeholder="4242 4242 4242 4242" maxlength="19" autocomplete="off">
+              <div class="card-brands">
+                <span class="card-brand" data-brand="visa">VISA</span>
+                <span class="card-brand" data-brand="mc">MC</span>
+                <span class="card-brand" data-brand="amex">AMEX</span>
+                <span class="card-brand" data-brand="disc">DISC</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Expiry</label>
+                <input type="text" class="form-input" placeholder="MM / YY" maxlength="7" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVC</label>
+                <input type="text" class="form-input" id="cvc-input" placeholder="123" maxlength="4" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cardholder Name</label>
+              <input type="text" class="form-input" placeholder="John Simpson" autocomplete="off">
+            </div>
+            <button class="pay-btn" id="pay-btn">Pay $149.00</button>
+
+            <div class="test-cards">
+              <button class="test-cards-toggle" id="test-cards-toggle">&#9662; Test card numbers</button>
+              <div class="test-cards-list" id="test-cards-list">
+                <div class="test-card-row" data-card="4242424242424242">
+                  <span class="number">4242 4242 4242 4242</span>
+                  <span class="result success">Approved</span>
+                </div>
+                <div class="test-card-row" data-card="4000000000009995">
+                  <span class="number">4000 0000 0000 9995</span>
+                  <span class="result decline">Insufficient Funds</span>
+                </div>
+                <div class="test-card-row" data-card="4000000000000002">
+                  <span class="number">4000 0000 0000 0002</span>
+                  <span class="result decline">Card Declined</span>
+                </div>
+                <div class="test-card-row" data-card="378282246310005">
+                  <span class="number">3782 822463 10005</span>
+                  <span class="result success">Amex Approved</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wallet view -->
+          <div class="pm-content" id="pm-wallet">
+            <div class="wallet-buttons">
+              <button class="wallet-btn apple-pay" onclick="simulateWallet('Apple Pay')">&#63743; Apple Pay</button>
+              <button class="wallet-btn google-pay" onclick="simulateWallet('Google Pay')">G Pay</button>
+            </div>
+            <div class="pm-insight" style="margin-top:20px">
+              <div class="pm-insight-label">Product Insight</div>
+              <p>Digital wallets bypass manual card entry entirely. Stripe reports Apple Pay and Google Pay increase checkout conversion by 22%+ in some cases. The Payment Element auto-detects device capabilities and only shows compatible wallets.</p>
+            </div>
+          </div>
+
+          <!-- BNPL view -->
+          <div class="pm-content" id="pm-bnpl">
+            <div class="bnpl-option" onclick="selectBnpl(this)">
+              <div class="bnpl-logo klarna">Klarna</div>
+              <div class="bnpl-details">
+                <div class="schedule">4 interest-free payments</div>
+                <div class="amount">4 x $37.25</div>
+              </div>
+            </div>
+            <div class="bnpl-option" onclick="selectBnpl(this)">
+              <div class="bnpl-logo afterpay">Afterpay</div>
+              <div class="bnpl-details">
+                <div class="schedule">4 biweekly payments</div>
+                <div class="amount">4 x $37.25</div>
+              </div>
+            </div>
+            <div class="bnpl-option" onclick="selectBnpl(this)">
+              <div class="bnpl-logo affirm">Affirm</div>
+              <div class="bnpl-details">
+                <div class="schedule">3-month financing at 0% APR</div>
+                <div class="amount">3 x $49.67</div>
+              </div>
+            </div>
+            <button class="pay-btn" style="margin-top:16px" onclick="simulateWallet('BNPL')">Continue with Selected</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon blue">&#8505;</div>
+          <div>
+            <div class="card-title">How Payment Element Works</div>
+            <div class="card-subtitle">Architecture overview</div>
+          </div>
+        </div>
+
+        <div class="pm-count-bar">
+          <div class="pm-count-number">125+</div>
+          <div class="pm-count-label">payment methods supported<br>through a single integration</div>
+        </div>
+
+        <div class="product-info-list">
+          <div class="product-info-item">
+            <div class="product-info-bullet"></div>
+            <div class="product-info-text"><strong>Single component, all methods.</strong> Before Payment Element, merchants integrated each payment method separately. Cards, wallets, BNPL, and bank debits each required unique UI code, validation, and error handling.</div>
+          </div>
+          <div class="product-info-item">
+            <div class="product-info-bullet"></div>
+            <div class="product-info-text"><strong>Dynamic method ordering.</strong> Stripe's Optimized Checkout Suite uses 100+ signals (device, location, history) to reorder payment methods in real time. A customer in Germany sees SEPA first; a US customer sees cards first.</div>
+          </div>
+          <div class="product-info-item">
+            <div class="product-info-bullet"></div>
+            <div class="product-info-text"><strong>Card brand detection.</strong> Try typing a Visa (4xxx) vs Amex (37xx) number. The form adapts: Amex uses a 4-digit CVC and different field grouping. This is handled automatically.</div>
+          </div>
+          <div class="product-info-item">
+            <div class="product-info-bullet"></div>
+            <div class="product-info-text"><strong>PCI scope reduction.</strong> Card data never touches the merchant's server. Stripe.js tokenizes on the client, so the merchant qualifies for SAQ-A (the simplest PCI compliance tier).</div>
+          </div>
+        </div>
+
+        <div class="pm-insight">
+          <div class="pm-insight-label">PM Perspective</div>
+          <p>The Payment Element mirrors a shift I saw in the EMV terminal world: semi-integrated solutions replaced bespoke integrations because the maintenance burden was unsustainable. Stripe made the same bet on the e-commerce side, and it paid off. One component handling 125+ methods is a product architecture decision that reduces merchant integration costs by orders of magnitude.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 2: LINK ==================== -->
+  <div class="tab-panel" id="panel-link">
+    <div class="section-intro">
+      <h2>Stripe Link</h2>
+      <p>One-click checkout using saved payment credentials. Link remembers your customers across every Stripe merchant, eliminating manual form entry for returning buyers.</p>
+    </div>
+
+    <!-- Side by side comparison -->
+    <div class="comparison-container">
+      <div class="comparison-side">
+        <div class="comparison-header">
+          <h3>Traditional Checkout</h3>
+          <p>12+ fields, 2-3 minutes</p>
+        </div>
+        <div class="checkout-field"><div class="field-label">Email</div>john@example.com</div>
+        <div class="checkout-field"><div class="field-label">First Name</div>John</div>
+        <div class="checkout-field"><div class="field-label">Last Name</div>Simpson</div>
+        <div class="checkout-field"><div class="field-label">Address Line 1</div>123 Bull St</div>
+        <div class="checkout-field"><div class="field-label">Address Line 2</div>&nbsp;</div>
+        <div class="checkout-field"><div class="field-label">City</div>Savannah</div>
+        <div class="checkout-field"><div class="field-label">State</div>GA</div>
+        <div class="checkout-field"><div class="field-label">ZIP</div>31401</div>
+        <div class="checkout-field"><div class="field-label">Card Number</div>4242 **** **** 4242</div>
+        <div class="checkout-field"><div class="field-label">Expiry</div>12/27</div>
+        <div class="checkout-field"><div class="field-label">CVC</div>***</div>
+        <div class="checkout-field"><div class="field-label">Cardholder Name</div>John Simpson</div>
+      </div>
+
+      <div class="comparison-divider">
+        <div class="vs-badge">VS</div>
+      </div>
+
+      <div class="comparison-side link-side">
+        <div class="comparison-header">
+          <h3>Link Checkout</h3>
+          <p>2 fields, under 10 seconds</p>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step-dot complete" id="link-step-1">1</div>
+          <div class="step-line complete"></div>
+          <div class="step-dot active" id="link-step-2">2</div>
+          <div class="step-line"></div>
+          <div class="step-dot" id="link-step-3">&#10003;</div>
+        </div>
+
+        <div class="checkout-field filled">
+          <div class="field-label">Email (Link account detected)</div>
+          john@example.com
+        </div>
+        <div class="checkout-field" style="border-color: var(--stripe-purple); text-align: center; color: var(--stripe-purple-light); cursor: pointer;" id="link-otp-field" onclick="simulateLinkOtp()">
+          <div class="field-label">One-time code sent via SMS</div>
+          <span id="link-otp-text">Click to simulate OTP verification</span>
+        </div>
+
+        <div id="link-saved-info" style="display:none; margin-top: 16px;">
+          <div class="checkout-field filled"><div class="field-label">Saved Address</div>123 Bull St, Savannah, GA 31401</div>
+          <div class="checkout-field filled"><div class="field-label">Saved Card</div>Visa ending in 4242</div>
+          <button class="pay-btn success" style="margin-top: 12px;">&#10003; Paid with Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion funnel -->
+    <div class="demo-grid" style="margin-top: 24px;">
+      <div class="demo-card full-width">
+        <div class="card-header">
+          <div class="card-icon green">&#9650;</div>
+          <div>
+            <div class="card-title">Conversion Impact</div>
+            <div class="card-subtitle">Simulated checkout funnel comparison</div>
+          </div>
+        </div>
+
+        <div class="funnel-container" id="funnel-container">
+          <div class="funnel-row">
+            <div class="funnel-label">Cart loaded</div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar traditional" style="width: 100%;"><span class="funnel-pct">100%</span></div>
+            </div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar link-bar" style="width: 100%;"><span class="funnel-pct">100%</span></div>
+            </div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Begin checkout</div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar traditional" data-width="68"><span class="funnel-pct">68%</span></div>
+            </div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar link-bar" data-width="74"><span class="funnel-pct">74%</span></div>
+            </div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Enter details</div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar traditional" data-width="51"><span class="funnel-pct">51%</span></div>
+            </div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar link-bar" data-width="72"><span class="funnel-pct">72%</span></div>
+            </div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Complete payment</div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar traditional" data-width="30"><span class="funnel-pct">30%</span></div>
+            </div>
+            <div class="funnel-bar-track">
+              <div class="funnel-bar link-bar" data-width="52"><span class="funnel-pct">52%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="funnel-legend">
+          <div class="funnel-legend-item"><div class="funnel-legend-dot trad"></div> Traditional checkout</div>
+          <div class="funnel-legend-item"><div class="funnel-legend-dot link-dot"></div> Link checkout</div>
+        </div>
+
+        <div class="pm-insight">
+          <div class="pm-insight-label">PM Perspective</div>
+          <p>Link addresses a problem the industry has tried to solve for over a decade: persistent customer identity across merchants. PayPal owns the customer relationship (merchants hate this). Apple Pay only works on Apple devices. Shop Pay only works on Shopify. Link's advantage is network breadth: any Stripe merchant gets it automatically. The risk? Link competes with the card networks' own click-to-pay initiatives (Visa CTP, Mastercard MDES). If issuers push those aggressively, Link could face headwinds.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 3: RADAR ==================== -->
+  <div class="tab-panel" id="panel-radar">
+    <div class="section-intro">
+      <h2>Stripe Radar</h2>
+      <p>ML-powered fraud prevention that scores every transaction using signals from millions of merchants across the Stripe network. Zero-configuration by default, fully customizable via a rules engine.</p>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Scenario Simulator -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon yellow">&#9737;</div>
+          <div>
+            <div class="card-title">Risk Score Simulator</div>
+            <div class="card-subtitle">Select a scenario to see Radar's response</div>
+          </div>
+        </div>
+
+        <div class="scenario-btns">
+          <button class="scenario-btn active" data-scenario="legitimate">Legitimate Purchase</button>
+          <button class="scenario-btn" data-scenario="velocity">Velocity Attack</button>
+          <button class="scenario-btn" data-scenario="friendly">Friendly Fraud</button>
+          <button class="scenario-btn" data-scenario="highvalue">High-Value Legit</button>
+        </div>
+
+        <div class="risk-score-display">
+          <div class="risk-score-value risk-low" id="risk-score">12</div>
+          <div class="risk-score-label risk-low" id="risk-label">Low Risk</div>
+        </div>
+
+        <div class="signal-list" id="signal-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Rules Engine -->
+      <div class="demo-card">
+        <div class="card-header">
+          <div class="card-icon red">&#9881;</div>
+          <div>
+            <div class="card-title">Rules Engine</div>
+            <div class="card-subtitle">Custom fraud prevention rules</div>
+          </div>
+        </div>
+
+        <div class="rule-builder">
+          <div class="rule-row">
+            <div class="rule-condition">risk_score > 85</div>
+            <div class="rule-action block">Block</div>
+            <div class="rule-toggle on" onclick="toggleRule(this)"></div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-condition">risk_score > 65 AND amount > 500</div>
+            <div class="rule-action review">Review</div>
+            <div class="rule-toggle on" onclick="toggleRule(this)"></div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-condition">card_country != billing_country</div>
+            <div class="rule-action review">Review</div>
+            <div class="rule-toggle on" onclick="toggleRule(this)"></div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-condition">is_disposable_email = true</div>
+            <div class="rule-action block">Block</div>
+            <div class="rule-toggle" onclick="toggleRule(this)"></div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-condition">ip_risk_level = "high"</div>
+            <div class="rule-action block">Block</div>
+            <div class="rule-toggle on" onclick="toggleRule(this)"></div>
+          </div>
+        </div>
+
+        <div class="pm-insight">
+          <div class="pm-insight-label">PM Perspective</div>
+          <p>This rules engine demonstrates "progressive disclosure of complexity": start with ML defaults that work out of the box, then expose a rules engine for merchants who want manual control. Most small merchants never touch the rules. Enterprise merchants build dozens. Both are well-served by the same product. This is the same design pattern I applied at Verifone when building configurable EMV parameter sets.</p>
+        </div>
+      </div>
+
+      <!-- Transaction Log -->
+      <div class="demo-card full-width">
+        <div class="card-header">
+          <div class="card-icon purple">&#9783;</div>
+          <div>
+            <div class="card-title">Transaction Log</div>
+            <div class="card-subtitle">Simulated Radar-scored transactions</div>
+          </div>
+        </div>
+
+        <div class="tx-log">
+          <div class="tx-log-header">
+            <div>Time</div>
+            <div>Description</div>
+            <div>Amount</div>
+            <div>Score</div>
+            <div>Action</div>
+          </div>
+          <div id="tx-log-body">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="pm-insight">
+          <div class="pm-insight-label">Network Moat</div>
+          <p>Traditional fraud tools (Kount, Ethoca, Verifi) operate on a single merchant's data. Radar scores transactions using signals from the entire Stripe network. If a card was used fraudulently at Merchant A, Merchant B's score reflects that within seconds, even though the two merchants have no relationship. A small merchant processing 1,000 transactions/month gets fraud intelligence calibrated on billions of transactions. That capability previously required enterprise contracts with processors or networks.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>Built by <strong>John Simpson</strong> &middot; Senior Product Manager &middot; 20 years in enterprise fintech &amp; payments</p>
+    <p style="margin-top:4px;">
+      <a href="https://johnsimpson.io" target="_blank">Portfolio</a> &middot;
+      <a href="https://linkedin.com/in/johnsjr" target="_blank">LinkedIn</a> &middot;
+      <a href="https://github.com/jesimpsonjr-prodmgmt" target="_blank">GitHub</a>
+    </p>
+    <p style="margin-top:12px; font-size: 11px;">Code is AI-assisted. Product thinking, domain expertise, and strategic commentary are mine.</p>
+  </div>
+</footer>
+
+<script>
+// ===== TAB NAVIGATION =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'link') animateFunnel();
+    if (btn.dataset.tab === 'radar') loadScenario('legitimate');
+  });
+});
+
+// ===== PAYMENT METHOD SUB-TABS =====
+document.querySelectorAll('.pm-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.pm-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.pm-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('pm-' + tab.dataset.pm).classList.add('active');
+  });
+});
+
+// ===== CARD NUMBER INPUT & BRAND DETECTION =====
+const cardInput = document.getElementById('card-number');
+const cvcInput = document.getElementById('cvc-input');
+const brands = document.querySelectorAll('.card-brand');
+
+cardInput.addEventListener('input', (e) => {
+  let val = e.target.value.replace(/\D/g, '');
+  let formatted = '';
+  let brand = null;
+
+  if (val.startsWith('4')) brand = 'visa';
+  else if (val.startsWith('5') || val.startsWith('2')) brand = 'mc';
+  else if (val.startsWith('37') || val.startsWith('34')) brand = 'amex';
+  else if (val.startsWith('6')) brand = 'disc';
+
+  brands.forEach(b => b.classList.remove('detected'));
+  if (brand) {
+    document.querySelector(`[data-brand="${brand}"]`).classList.add('detected');
+  }
+
+  if (brand === 'amex') {
+    formatted = val.replace(/(\d{4})(\d{0,6})(\d{0,5})/, (m, a, b, c) =>
+      [a, b, c].filter(Boolean).join(' ')
+    );
+    cvcInput.maxLength = 4;
+    cvcInput.placeholder = '1234';
+  } else {
+    formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+    cvcInput.maxLength = 3;
+    cvcInput.placeholder = '123';
+  }
+
+  e.target.value = formatted.trim();
+});
+
+// ===== PAY BUTTON SIMULATION =====
+const payBtn = document.getElementById('pay-btn');
+
+payBtn.addEventListener('click', () => {
+  const cardNum = cardInput.value.replace(/\s/g, '');
+  payBtn.classList.add('processing');
+  payBtn.textContent = 'Processing...';
+
+  setTimeout(() => {
+    if (cardNum === '4242424242424242' || cardNum === '378282246310005' || cardNum === '') {
+      payBtn.classList.remove('processing');
+      payBtn.classList.add('success');
+      payBtn.innerHTML = '&#10003; Payment Approved';
+    } else {
+      payBtn.classList.remove('processing');
+      payBtn.classList.add('declined');
+      payBtn.textContent = '&#10007; Card Declined';
+    }
+
+    setTimeout(() => {
+      payBtn.classList.remove('success', 'declined');
+      payBtn.textContent = 'Pay $149.00';
+    }, 2500);
+  }, 1500);
+});
+
+// ===== TEST CARDS TOGGLE & AUTOFILL =====
+document.getElementById('test-cards-toggle').addEventListener('click', () => {
+  document.getElementById('test-cards-list').classList.toggle('show');
+});
+
+document.querySelectorAll('.test-card-row').forEach(row => {
+  row.addEventListener('click', () => {
+    const num = row.dataset.card;
+    cardInput.value = '';
+    cardInput.value = num;
+    cardInput.dispatchEvent(new Event('input'));
+    document.getElementById('test-cards-list').classList.remove('show');
+  });
+});
+
+// ===== WALLET SIMULATION =====
+function simulateWallet(name) {
+  const btn = event.target;
+  const origText = btn.textContent;
+  btn.textContent = 'Authenticating...';
+  btn.style.opacity = '0.7';
+  setTimeout(() => {
+    btn.textContent = '\u2713 Approved via ' + name;
+    btn.style.opacity = '1';
+    setTimeout(() => {
+      btn.textContent = origText;
+    }, 2000);
+  }, 1200);
+}
+
+// ===== BNPL SELECTION =====
+function selectBnpl(el) {
+  document.querySelectorAll('.bnpl-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ===== LINK OTP SIMULATION =====
+function simulateLinkOtp() {
+  const otpField = document.getElementById('link-otp-field');
+  const otpText = document.getElementById('link-otp-text');
+  const savedInfo = document.getElementById('link-saved-info');
+  const step2 = document.getElementById('link-step-2');
+  const step3 = document.getElementById('link-step-3');
+
+  otpText.textContent = 'Verifying...';
+  otpField.style.borderColor = 'var(--stripe-yellow)';
+
+  setTimeout(() => {
+    otpText.textContent = '\u2713 Verified';
+    otpField.style.borderColor = 'var(--stripe-green)';
+    otpField.style.color = 'var(--stripe-green)';
+    step2.classList.remove('active');
+    step2.classList.add('complete');
+    step2.innerHTML = '&#10003;';
+    step3.classList.add('complete');
+    step3.innerHTML = '&#10003;';
+    document.querySelectorAll('.step-line').forEach(l => l.classList.add('complete'));
+    savedInfo.style.display = 'block';
+  }, 1500);
+}
+
+// ===== FUNNEL ANIMATION =====
+function animateFunnel() {
+  const bars = document.querySelectorAll('.funnel-bar[data-width]');
+  bars.forEach(bar => { bar.style.width = '0%'; });
+  setTimeout(() => {
+    bars.forEach(bar => { bar.style.width = bar.dataset.width + '%'; });
+  }, 100);
+}
+
+// ===== RADAR SCENARIOS =====
+const scenarios = {
+  legitimate: {
+    score: 12, level: 'low', label: 'Low Risk',
+    signals: [
+      { name: 'Card fingerprint', value: 8, level: 'low' },
+      { name: 'Device trust', value: 5, level: 'low' },
+      { name: 'Behavioral', value: 15, level: 'low' },
+      { name: 'Network intel', value: 3, level: 'low' },
+      { name: 'Velocity', value: 10, level: 'low' },
+      { name: 'Geolocation', value: 12, level: 'low' }
+    ]
+  },
+  velocity: {
+    score: 92, level: 'high', label: 'High Risk',
+    signals: [
+      { name: 'Card fingerprint', value: 78, level: 'high' },
+      { name: 'Device trust', value: 85, level: 'high' },
+      { name: 'Behavioral', value: 95, level: 'high' },
+      { name: 'Network intel', value: 88, level: 'high' },
+      { name: 'Velocity', value: 99, level: 'high' },
+      { name: 'Geolocation', value: 72, level: 'high' }
+    ]
+  },
+  friendly: {
+    score: 48, level: 'medium', label: 'Medium Risk',
+    signals: [
+      { name: 'Card fingerprint', value: 12, level: 'low' },
+      { name: 'Device trust', value: 20, level: 'low' },
+      { name: 'Behavioral', value: 55, level: 'med' },
+      { name: 'Network intel', value: 62, level: 'med' },
+      { name: 'Velocity', value: 30, level: 'low' },
+      { name: 'Geolocation', value: 18, level: 'low' }
+    ]
+  },
+  highvalue: {
+    score: 35, level: 'medium', label: 'Medium Risk',
+    signals: [
+      { name: 'Card fingerprint', value: 10, level: 'low' },
+      { name: 'Device trust', value: 8, level: 'low' },
+      { name: 'Behavioral', value: 22, level: 'low' },
+      { name: 'Network intel', value: 5, level: 'low' },
+      { name: 'Velocity', value: 15, level: 'low' },
+      { name: 'Geolocation', value: 55, level: 'med' }
+    ]
+  }
+};
+
+document.querySelectorAll('.scenario-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadScenario(btn.dataset.scenario);
+  });
+});
+
+function loadScenario(key) {
+  const s = scenarios[key];
+  const scoreEl = document.getElementById('risk-score');
+  const labelEl = document.getElementById('risk-label');
+
+  scoreEl.textContent = s.score;
+  scoreEl.className = 'risk-score-value risk-' + s.level;
+  labelEl.textContent = s.label;
+  labelEl.className = 'risk-score-label risk-' + s.level;
+
+  const signalList = document.getElementById('signal-list');
+  signalList.innerHTML = s.signals.map(sig => `
+    <div class="signal-item">
+      <div class="signal-name">${sig.name}</div>
+      <div class="signal-bar-track">
+        <div class="signal-bar-fill ${sig.level}" style="width: ${sig.value}%"></div>
+      </div>
+      <div class="signal-value">${sig.value}</div>
+    </div>
+  `).join('');
+}
+
+function toggleRule(el) {
+  el.classList.toggle('on');
+}
+
+// ===== TRANSACTION LOG =====
+const txData = [
+  { time: '14:32:08', desc: 'Online purchase - electronics', amount: '$1,249.00', score: 18, action: 'approved' },
+  { time: '14:32:11', desc: 'Digital subscription renewal', amount: '$9.99', score: 4, action: 'approved' },
+  { time: '14:32:14', desc: 'High-velocity card testing', amount: '$1.00', score: 96, action: 'blocked' },
+  { time: '14:32:15', desc: 'High-velocity card testing', amount: '$1.00', score: 98, action: 'blocked' },
+  { time: '14:32:18', desc: 'Cross-border luxury goods', amount: '$3,200.00', score: 67, action: 'review' },
+  { time: '14:32:22', desc: 'Grocery delivery', amount: '$87.50', score: 6, action: 'approved' },
+  { time: '14:32:25', desc: 'Gift card bulk purchase', amount: '$500.00', score: 72, action: 'review' },
+  { time: '14:32:28', desc: 'SaaS monthly billing', amount: '$49.00', score: 2, action: 'approved' },
+  { time: '14:32:31', desc: 'Stolen card - known BIN', amount: '$899.00', score: 94, action: 'blocked' },
+  { time: '14:32:34', desc: 'Returning customer loyalty', amount: '$156.00', score: 8, action: 'approved' },
+];
+
+function populateTxLog() {
+  const body = document.getElementById('tx-log-body');
+  body.innerHTML = txData.map(tx => `
+    <div class="tx-log-row">
+      <div style="color: var(--text-muted)">${tx.time}</div>
+      <div style="color: var(--text-secondary)">${tx.desc}</div>
+      <div style="color: var(--text-primary)">${tx.amount}</div>
+      <div style="color: ${tx.score > 65 ? 'var(--stripe-red)' : tx.score > 40 ? 'var(--stripe-yellow)' : 'var(--stripe-green)'}">${tx.score}</div>
+      <div><span class="tx-status ${tx.action}">${tx.action}</span></div>
+    </div>
+  `).join('');
+}
+
+// ===== INIT =====
+loadScenario('legitimate');
+populateTxLog();
+</script>
+
+</body>
+</html>
